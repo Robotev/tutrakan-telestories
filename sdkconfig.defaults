@@ -1,0 +1,7 @@
+CONFIG_IDF_TARGET="esp32s3"
+
+# GPIO43/44 (UART0's default TX/RX pins) are used for keypad Row 1/Row 2
+# per requirements.md's pin table. Route the console over the native
+# USB-Serial-JTAG peripheral instead, so flashing/logging doesn't contend
+# with the keypad wiring on those pins.
+CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y
