@@ -256,6 +256,17 @@ void mp3_player_init(void)
 
 void mp3_player_select(int module_index)
 {
+    if (s_selected_module >= 0 && s_selected_module != module_index) {
+        // uart_set_pin() only ever connects the pins it's given - it has no
+        // idea what was connected before, so it never disconnects the
+        // previously selected module's TX/RX from this UART's signal in the
+        // GPIO matrix. Without this, the matrix keeps fanning the TX signal
+        // out to every module ever selected, so each newly selected module
+        // joins the broadcast instead of replacing the old one.
+        gpio_reset_pin(MODULE_PINS[s_selected_module].tx_gpio);
+        gpio_reset_pin(MODULE_PINS[s_selected_module].rx_gpio);
+    }
+
     s_selected_module = module_index;
     uart_set_pin(MP3_UART_NUM, MODULE_PINS[module_index].tx_gpio, MODULE_PINS[module_index].rx_gpio,
                  UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
